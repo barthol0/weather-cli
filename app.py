@@ -1,12 +1,20 @@
-import requests
-import bs4
+import requests, bs4, collections
 
+
+WeatherReport = collections.namedtuple('WeatherReport',
+                                        'cond, temp, scale, loc')
 
 def main():
     print_header()
     loc = input("What's your location? ")
     html = get_html_from_web(loc)
-    get_weather_from_html(html)
+    report = get_weather_from_html(html)
+    print('The temp in {} is {} {} and {}'.format(
+        report.loc,
+        report.temp,
+        report.scale,
+        report.cond
+    ))
 
 
 def print_header():
@@ -32,7 +40,9 @@ def get_weather_from_html(html):
     condition = cleanup_text(condition)
     temp = cleanup_text(temp)
     scale = cleanup_text(scale)
-    print(loc, condition, temp, scale)
+
+    report = WeatherReport(cond=condition, temp=temp, scale=scale, loc=loc)
+    return report
 
 
 def cleanup_text(text: str):
